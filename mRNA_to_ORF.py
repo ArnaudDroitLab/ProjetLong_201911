@@ -9,6 +9,8 @@ import os
 import pandas
 from Bio import SeqIO
 
+
+#Fonctions
 def listdir_nohidden(path):
     for f in os.listdir(path):
         if not f.startswith('.'):
@@ -18,8 +20,6 @@ def listdir_nohidden(path):
 
 ## MAIN ##
 fasta_list = listdir_nohidden('./mRNA_fasta')
-
-#récupération séquences sous forme de dictionnaire - clefs = ids -
 path = './mRNA_fasta/'
 dico={}
 mRNA_sequence = []
@@ -27,6 +27,7 @@ start = []
 stop = []
 gene = []
 longueur_mRNA = []
+orf = []
 
 for file_name in fasta_list:
     gene_name = (file_name.split('_')[0])
@@ -36,22 +37,35 @@ for file_name in fasta_list:
     for id in dico[gene_name+'_mRNA']:
         for value in id.values():
             stop_list = []
+            orf_list = []
             mydna = value.seq
             mRNA_sequence.append(str(value.seq))
-            start.append(mydna.find('ATG'))
-            stop_list.append(mydna.find('TGA'))
-            stop_list.append(mydna.find('TAG'))
-            stop_list.append(mydna.find('TAA'))   
+            ATG_indice = mydna.find('ATG')
+            start.append(ATG_indice)
+            TGA_indice = mydna.find('TGA')
+            TAG_indice = mydna.find('TAG')
+            TAA_indice = mydna.find('TAA')
+            stop_list.append(TGA_indice)
+            stop_list.append(TAG_indice)
+            stop_list.append(TAA_indice)   
             stop.append(stop_list)
             gene.append(gene_name)
             longueur_mRNA.append(len(str(value.seq)))
+            orf_TGA = value.seq[ATG_indice:TGA_indice]
+            orf_TAG = value.seq[ATG_indice:TAG_indice]
+            orf_TAA = value.seq[ATG_indice:TAA_indice]
+            orf_list.append(str(orf_TGA))
+            orf_list.append(str(orf_TAG))
+            orf_list.append(str(orf_TAA))
+            orf.append(orf_list)
 
-
-df = pandas.DataFrame(columns = ['gene', 'mRNA_sequence','start','stop','longueur_mRNA','ORF_sequence'])
+#Creation dataframe
+df = pandas.DataFrame(columns = ['gene', 'mRNA_sequence','start','stop','longueur_mRNA','ORF_sequences'])
 df['gene'] = pandas.Series(gene)
 df['mRNA_sequence'] = pandas.Series(mRNA_sequence)
 df['start'] = pandas.Series(start)
 df['stop'] = pandas.Series(stop)
 df['longueur_mRNA'] = pandas.Series(longueur_mRNA)
+df['ORF_sequences'] = pandas.Series(orf)
 
 print(df)
