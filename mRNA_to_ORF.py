@@ -14,6 +14,7 @@ def listdir_nohidden(path):
             yield f
 
 
+
 ## MAIN ##
 fasta_list = listdir_nohidden('./mRNA_fasta')
 
@@ -24,9 +25,7 @@ for file_name in fasta_list:
     gene_name = (file_name.split('_')[0])
     dico[gene_name+'_mRNA'] = []
     dico[gene_name+'_mRNA'].append(SeqIO.to_dict(SeqIO.parse(path+file_name, 'fasta')))
-
-for k in dico.keys():
-    print(k)
-
-for v in dico.values():
-        print(v)
+    for id in dico[gene_name+'_mRNA']:
+        for value in id.values():
+            mydna = value.seq
+            print(mydna.find('ATG'))
