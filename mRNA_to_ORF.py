@@ -26,6 +26,7 @@ mRNA_sequence = []
 start = []
 stop = []
 gene = []
+longueur_mRNA = []
 
 for file_name in fasta_list:
     gene_name = (file_name.split('_')[0])
@@ -43,12 +44,14 @@ for file_name in fasta_list:
             stop_list.append(mydna.find('TAA'))   
             stop.append(stop_list)
             gene.append(gene_name)
+            longueur_mRNA.append(len(str(value.seq)))
 
 
-df = pandas.DataFrame(columns = ['gene', 'mRNA_sequence','start','stop','ORF_sequence'])
+df = pandas.DataFrame(columns = ['gene', 'mRNA_sequence','start','stop','longueur_mRNA','ORF_sequence'])
 df['gene'] = pandas.Series(gene)
 df['mRNA_sequence'] = pandas.Series(mRNA_sequence)
 df['start'] = pandas.Series(start)
 df['stop'] = pandas.Series(stop)
+df['longueur_mRNA'] = pandas.Series(longueur_mRNA)
 
 print(df)
