@@ -59,6 +59,7 @@ for file_name in fasta_list:
             orf_list.append(str(orf_TAA))
             orf.append(orf_list)
 
+
 #Creation dataframe
 df = pandas.DataFrame(columns = ['gene', 'mRNA_sequence','start','stop','longueur_mRNA','ORF_sequences'])
 df['gene'] = pandas.Series(gene)
@@ -67,5 +68,3 @@ df['start'] = pandas.Series(start)
 df['stop'] = pandas.Series(stop)
 df['longueur_mRNA'] = pandas.Series(longueur_mRNA)
 df['ORF_sequences'] = pandas.Series(orf)
-
-print(df)
