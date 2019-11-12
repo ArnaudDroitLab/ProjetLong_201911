@@ -22,6 +22,7 @@ def listdir_nohidden(path):
 fasta_list = listdir_nohidden('./mRNA_fasta')
 path = './mRNA_fasta/'
 dico={}
+mRNA_name = []
 mRNA_sequence = []
 start = []
 stop = []
@@ -35,6 +36,8 @@ for file_name in fasta_list:
     dico[gene_name+'_mRNA'].append(SeqIO.to_dict(SeqIO.parse(path+file_name, 'fasta')))
     
     for id in dico[gene_name+'_mRNA']:
+        for key in id.keys():
+            mRNA_name.append(key)
         for value in id.values():
             stop_list = []
             orf_list = []
@@ -61,10 +64,14 @@ for file_name in fasta_list:
 
 
 #Creation dataframe
-df = pandas.DataFrame(columns = ['gene', 'mRNA_sequence','start','stop','longueur_mRNA','ORF_sequences'])
+df = pandas.DataFrame(columns = ['gene', 'mRNA_name','mRNA_sequence','start','stop','longueur_mRNA','ORF_sequences'])
 df['gene'] = pandas.Series(gene)
+df['mRNA_name'] = pandas.Series(mRNA_name)
 df['mRNA_sequence'] = pandas.Series(mRNA_sequence)
 df['start'] = pandas.Series(start)
 df['stop'] = pandas.Series(stop)
 df['longueur_mRNA'] = pandas.Series(longueur_mRNA)
 df['ORF_sequences'] = pandas.Series(orf)
+
+#Export vers csv
+pandas.DataFrame.to_csv(df, 'ORF.csv')
