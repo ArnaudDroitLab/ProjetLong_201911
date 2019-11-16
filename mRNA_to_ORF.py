@@ -44,41 +44,43 @@ for file_name in fasta_list:
             longueur_mRNA.append(len(str(value.seq)))
             gene.append(gene_name)
             
-            #Sens
-            sens = value.seq
-            ATG_indice_sens = sens.find('ATG')
-            TGA_indice_sens = sens.find('TGA')
-            TAG_indice_sens = sens.find('TAG')
-            TAA_indice_sens = sens.find('TAA')
-            orf_TGA_sens = sens[ATG_indice_sens:TGA_indice_sens]
-            orf_TAG_sens = sens[ATG_indice_sens:TAG_indice_sens]
-            orf_TAA_sens = sens[ATG_indice_sens:TAA_indice_sens]
-            if len(str(orf_TGA_sens)) >= 30:
-                orf_list.append(str(orf_TGA_sens))
-            if len(str(orf_TAG_sens)) >= 30:
-                orf_list.append(str(orf_TAG_sens))
-            if len(str(orf_TAA_sens)) >= 30:
-                orf_list.append(str(orf_TAA_sens))
+            for cadre in range(3):
+                
+                #Sens
+                sens = value.seq[cadre:]
+                ATG_indice_sens = sens.find('ATG')
+                TGA_indice_sens = sens.find('TGA')
+                TAG_indice_sens = sens.find('TAG')
+                TAA_indice_sens = sens.find('TAA')
+                orf_TGA_sens = sens[ATG_indice_sens:TGA_indice_sens]
+                orf_TAG_sens = sens[ATG_indice_sens:TAG_indice_sens]
+                orf_TAA_sens = sens[ATG_indice_sens:TAA_indice_sens]
+                if len(str(orf_TGA_sens)) >= 30 and len(str(orf_TGA_sens))%3==0:
+                    orf_list.append(str(orf_TGA_sens))
+                if len(str(orf_TAG_sens)) >= 30 and len(str(orf_TAG_sens))%3==0:
+                    orf_list.append(str(orf_TAG_sens))
+                if len(str(orf_TAA_sens)) >= 30 and len(str(orf_TAA_sens))%3==0:
+                    orf_list.append(str(orf_TAA_sens))
             
-            #Antisens
-            antisens = sens.complement()
-            ATG_indice_antisens = antisens.find('ATG')
-            TGA_indice_antisens = antisens.find('TGA')
-            TAG_indice_antisens = antisens.find('TAG')
-            TAA_indice_antisens = antisens.find('TAA')
-            orf_TGA_antisens = antisens[ATG_indice_antisens:TGA_indice_antisens]
-            orf_TAG_antisens = antisens[ATG_indice_antisens:TAG_indice_antisens]
-            orf_TAA_antisens = antisens[ATG_indice_antisens:TAA_indice_antisens]
-            if len(str(orf_TGA_antisens)) >= 30:
-                orf_list.append(str(orf_TGA_antisens))
-            if len(str(orf_TAG_antisens)) >= 30:
-                orf_list.append(str(orf_TAG_antisens))
-            if len(str(orf_TAA_antisens)) >= 30:
-                orf_list.append(str(orf_TAA_antisens)) 
+                #Antisens
+                antisens = sens.complement()
+                ATG_indice_antisens = antisens.find('ATG')
+                TGA_indice_antisens = antisens.find('TGA')
+                TAG_indice_antisens = antisens.find('TAG')
+                TAA_indice_antisens = antisens.find('TAA')
+                orf_TGA_antisens = antisens[ATG_indice_antisens:TGA_indice_antisens]
+                orf_TAG_antisens = antisens[ATG_indice_antisens:TAG_indice_antisens]
+                orf_TAA_antisens = antisens[ATG_indice_antisens:TAA_indice_antisens]
+                if len(str(orf_TGA_antisens)) >= 30 and len(str(orf_TGA_antisens))%3==0 :
+                    orf_list.append(str(orf_TGA_antisens))
+                if len(str(orf_TAG_antisens)) >= 30 and len(str(orf_TAG_antisens))%3==0:
+                    orf_list.append(str(orf_TAG_antisens))
+                if len(str(orf_TAA_antisens)) >= 30 and len(str(orf_TAA_antisens))%3==0:
+                    orf_list.append(str(orf_TAA_antisens)) 
             
             nombre_ORF.append(len(orf_list))
             orf.append(orf_list)
-            
+
 
 #Creation dataframe
 df = pandas.DataFrame(columns = ['gene', 'mRNA_name','mRNA_sequence','longueur_mRNA','nombre_ORF','ORF_sequences'])
@@ -88,8 +90,6 @@ df['mRNA_sequence'] = pandas.Series(mRNA_sequence)
 df['longueur_mRNA'] = pandas.Series(longueur_mRNA)
 df['nombre_ORF'] = pandas.Series(nombre_ORF)
 df['ORF_sequences'] = pandas.Series(orf)
-
-print(df['nombre_ORF'])
 
 #Export vers csv
 pandas.DataFrame.to_csv(df, 'ORF.csv')
