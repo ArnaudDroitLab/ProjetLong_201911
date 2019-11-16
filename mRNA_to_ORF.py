@@ -24,10 +24,9 @@ path = './mRNA_fasta/'
 dico={}
 mRNA_name = []
 mRNA_sequence = []
-start = []
-stop = []
 gene = []
 longueur_mRNA = []
+nombre_ORF = []
 orf = []
 
 for file_name in fasta_list:
@@ -38,40 +37,59 @@ for file_name in fasta_list:
     for id in dico[gene_name+'_mRNA']:
         for key in id.keys():
             mRNA_name.append(key)
+        
         for value in id.values():
-            stop_list = []
             orf_list = []
-            mydna = value.seq
             mRNA_sequence.append(str(value.seq))
-            ATG_indice = mydna.find('ATG')
-            start.append(ATG_indice)
-            TGA_indice = mydna.find('TGA')
-            TAG_indice = mydna.find('TAG')
-            TAA_indice = mydna.find('TAA')
-            stop_list.append(TGA_indice)
-            stop_list.append(TAG_indice)
-            stop_list.append(TAA_indice)   
-            stop.append(stop_list)
-            gene.append(gene_name)
             longueur_mRNA.append(len(str(value.seq)))
-            orf_TGA = value.seq[ATG_indice:TGA_indice]
-            orf_TAG = value.seq[ATG_indice:TAG_indice]
-            orf_TAA = value.seq[ATG_indice:TAA_indice]
-            orf_list.append(str(orf_TGA))
-            orf_list.append(str(orf_TAG))
-            orf_list.append(str(orf_TAA))
+            gene.append(gene_name)
+            
+            #Sens
+            sens = value.seq
+            ATG_indice_sens = sens.find('ATG')
+            TGA_indice_sens = sens.find('TGA')
+            TAG_indice_sens = sens.find('TAG')
+            TAA_indice_sens = sens.find('TAA')
+            orf_TGA_sens = sens[ATG_indice_sens:TGA_indice_sens]
+            orf_TAG_sens = sens[ATG_indice_sens:TAG_indice_sens]
+            orf_TAA_sens = sens[ATG_indice_sens:TAA_indice_sens]
+            if len(str(orf_TGA_sens)) >= 30:
+                orf_list.append(str(orf_TGA_sens))
+            if len(str(orf_TAG_sens)) >= 30:
+                orf_list.append(str(orf_TAG_sens))
+            if len(str(orf_TAA_sens)) >= 30:
+                orf_list.append(str(orf_TAA_sens))
+            
+            #Antisens
+            antisens = sens.complement()
+            ATG_indice_antisens = antisens.find('ATG')
+            TGA_indice_antisens = antisens.find('TGA')
+            TAG_indice_antisens = antisens.find('TAG')
+            TAA_indice_antisens = antisens.find('TAA')
+            orf_TGA_antisens = antisens[ATG_indice_antisens:TGA_indice_antisens]
+            orf_TAG_antisens = antisens[ATG_indice_antisens:TAG_indice_antisens]
+            orf_TAA_antisens = antisens[ATG_indice_antisens:TAA_indice_antisens]
+            if len(str(orf_TGA_antisens)) >= 30:
+                orf_list.append(str(orf_TGA_antisens))
+            if len(str(orf_TAG_antisens)) >= 30:
+                orf_list.append(str(orf_TAG_antisens))
+            if len(str(orf_TAA_antisens)) >= 30:
+                orf_list.append(str(orf_TAA_antisens)) 
+            
+            nombre_ORF.append(len(orf_list))
             orf.append(orf_list)
-
+            
 
 #Creation dataframe
-df = pandas.DataFrame(columns = ['gene', 'mRNA_name','mRNA_sequence','start','stop','longueur_mRNA','ORF_sequences'])
+df = pandas.DataFrame(columns = ['gene', 'mRNA_name','mRNA_sequence','longueur_mRNA','nombre_ORF','ORF_sequences'])
 df['gene'] = pandas.Series(gene)
 df['mRNA_name'] = pandas.Series(mRNA_name)
 df['mRNA_sequence'] = pandas.Series(mRNA_sequence)
-df['start'] = pandas.Series(start)
-df['stop'] = pandas.Series(stop)
 df['longueur_mRNA'] = pandas.Series(longueur_mRNA)
+df['nombre_ORF'] = pandas.Series(nombre_ORF)
 df['ORF_sequences'] = pandas.Series(orf)
+
+print(df['nombre_ORF'])
 
 #Export vers csv
 pandas.DataFrame.to_csv(df, 'ORF.csv')
