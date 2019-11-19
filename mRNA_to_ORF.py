@@ -23,6 +23,7 @@ def listdir_nohidden(path):
 fasta_list = listdir_nohidden('./mRNA_fasta')
 path = './mRNA_fasta/'
 dico={}
+annovar_line = []
 transcript_name = []
 mutation_name = []
 mRNA_sens = []
@@ -40,7 +41,14 @@ for file_name in fasta_list:
     dico[gene_name+'_mRNA'].append(SeqIO.to_dict(SeqIO.parse(path+file_name, 'fasta')))
     
     for id in dico[gene_name+'_mRNA']:
+        
         for key in id.keys():
+            
+            if key[5] == 'N':
+                annovar_line.append(key[0:5])
+            else:
+                annovar_line.append(key[0:6])
+                
             mRNA_name = re.sub('line(\d)+','',key)
             transcript_name.append(mRNA_name[0:9])
             mutation_name.append(mRNA_name[9:])
@@ -94,8 +102,9 @@ for file_name in fasta_list:
 
 
 #Creation dataframe
-df = pandas.DataFrame(columns = ['gene','transcript_name','mutation_name','mRNA_sens', 'mRNA_antisens','longueur_mRNA','nombre_ORF_sens','ORF_sens','nombre_ORF_antisens','ORF_antisens'])
+df = pandas.DataFrame(columns = ['gene','annovar_line','transcript_name','mutation_name','mRNA_sens', 'mRNA_antisens','longueur_mRNA','nombre_ORF_sens','ORF_sens','nombre_ORF_antisens','ORF_antisens'])
 df['gene'] = pandas.Series(gene)
+df['annovar_line'] = pandas.Series(annovar_line)
 df['transcript_name'] = pandas.Series(transcript_name)
 df['mutation_name'] = pandas.Series(mutation_name)
 df['mRNA_sens'] = pandas.Series(mRNA_sens)
