@@ -11,40 +11,37 @@ import pandas
 
 ## Fonctions ##
 
-#vérifier qu’il existe bien en 3’ une partie de séquence identique à WT
+#Vérifier qu’il existe bien en 3’ une partie de séquence identique à WT
+#Colonne Pos_mut_ATI
 def find_same (mRNA_wildtype, orf_mut):
-    if orf_mut == None:
-        same = -2
-    same = mRNA_wildtype.find(orf_mut[i:])
-    return(same)
+    same = -1
+    for i in range(len(orf_mut)):
+        same = mRNA_wildtype.find(orf_mut[i:])
+    return same
 
 
-#déterminer où se trouve la mutation qui a décalé le site d’initialisation de la traduction en 5’
+#Déterminer où se trouve la mutation qui a décalé le site d’initialisation de la traduction en 5’
+#Colonne Pos_mut_fs
 def find_fs (mRNA_wildtype, orf_mut, same):
-    if same >= 0:
-        fs = mRNA_wildtype.find(orf_mut[i:same],0,same)
-    else:
-        if same == -2:
-            fs = -2
-        else:
-            fs = mRNA_wildtype.find(orf_mut[i:])
-    return(fs)
+    fs = -1
+    if same > 0:
+        for i in range(same):
+            fs = mRNA_wildtype.find(orf_mut[i:same])
+    return fs
 
 
-#regarder la présence de la séquence de Kozak à proximité de l'ATI
-def find_kosak (orf):
-    if orf == None:
-        kosak_indice = -2
+#Regarder la présence de la séquence de Kozak à proximité de l'ATI
+#Colonne Pos_Kosak
+def find_kosak (orf): 
+    kosak_A = orf.find('GCCACCATGG')   
+    kosak_G = orf.find('GCCGCCATGG')
+    if kosak_A >= 0:
+        kosak_indice = kosak_A
+    if kosak_G >= 0:
+        kosak = kosak_G
     else: 
-        kosak_indice_A = orf.find('GCCACCATGG')   
-        kosak_indice_G = orf.find('GCCGCCATGG')
-        if kosak_indice_A > 0:
-            kosak_indice = kosak_indice_A
-        if kosak_indice_G > 0:
-            kosak_indice = kosak_indice_G
-        else: 
-            kosak_indice = -1
-    return(kosak_indice)
+        kosak = -1
+    return kosak
 
 
 
@@ -65,14 +62,15 @@ for i in range(len(df)):
 
     if (df.iloc[i]['mutation'] == 'WILDTYPE'):
         
+        #Sequences WT de reference
         wt_sens = df.iloc[i]['mRNA_sens']
         wt_antisens = df.iloc[i]['mRNA_antisens']
         
+        #Sequences mutee a comparer
         orf_list_sens = df.iloc[i+1]['ORF_sens']
         orf_list_sens = orf_list_sens.replace('[','')
         orf_list_sens = orf_list_sens.replace(']','')
         orf_list_sens = orf_list_sens.replace("'",'')
-        #print(orf_list_sens)
         orf_list_sens = orf_list_sens.split(',')
 
         orf_list_antisens = df.iloc[i+1]['ORF_antisens']
@@ -81,7 +79,8 @@ for i in range(len(df)):
         orf_list_antisens = orf_list_antisens.replace(']','')
         orf_list_antisens = orf_list_antisens.replace("'","")
         orf_list_antisens = orf_list_antisens.split(',')
-   
+
+        #Sens
         for orf_sens in orf_list_sens: 
     
             orf_list.append(orf_sens)
@@ -100,6 +99,7 @@ for i in range(len(df)):
             kosak_sens = find_kosak(orf_sens)
             kosak_list.append(kosak_sens)
         
+        #Antisens
         for orf_antisens in orf_list_antisens: 
             
             orf_list.append(orf_antisens)
@@ -118,18 +118,24 @@ for i in range(len(df)):
             kosak_antisens = find_kosak(orf_antisens)
             kosak_list.append(kosak_antisens)
         
-            
-df_fsATI = pandas.DataFrame(columns = ['gene', 'transcript', 'mutation', 'sens', 'ORF', 'Pos_mut_fs', 'Pos_mut_ATI', 'Pos_Kosak'])
-df_fsATI['Pos_mut_ATI'] = pandas.Series(same_list)
-df_fsATI['Pos_mut_fs'] = pandas.Series(fs_list)
-df_fsATI['Pos_Kosak'] = pandas.Series(kosak_list)
-df_fsATI['ORF'] = pandas.Series(orf_list)
-df_fsATI['gene'] = pandas.Series(gene_list)
-df_fsATI['transcript'] = pandas.Series(transcript_list)
-df_fsATI['mutation'] = pandas.Series(mutation_list)
-df_fsATI['sens'] = pandas.Series(sens_list)
+#Creation dataframe resultats          
+df_indices = pandas.DataFrame(columns = ['gene', 'transcript', 'mutation', 'sens', 'ORF', 'Pos_mut_fs', 'Pos_mut_ATI', 'Pos_Kosak'])
+df_indices['Pos_mut_ATI'] = pandas.Series(same_list)
+df_indices['Pos_mut_fs'] = pandas.Series(fs_list)
+df_indices['Pos_Kosak'] = pandas.Series(kosak_list)
+df_indices['ORF'] = pandas.Series(orf_list)
+df_indices['gene'] = pandas.Series(gene_list)
+df_indices['transcript'] = pandas.Series(transcript_list)
+df_indices['mutation'] = pandas.Series(mutation_list)
+df_indices['sens'] = pandas.Series(sens_list)
 
-print(df_fsATI)
+#Selectionne les lignes en fonction des indices positifs pour Pos_mut_fs et Pos_mut_ATI
+df_ATI = df_indices.loc [ df_indices['Pos_mut_ATI']>0 ]
+df_fsATI = df_ATI.loc [ df_ATI['Pos_mut_fs']>0 ]
 
+print('\nLes fsATI ont été trouves.')
 
-
+#Export vers csv
+pandas.DataFrame.to_csv(df_fsATI, 'fsATI.csv')
+print('Le fichier fsATI.csv a été généré.\n')
+print('Job done.\n')
