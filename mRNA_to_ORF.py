@@ -4,14 +4,15 @@ Master 2 BIB Paris Diderot - 2019-2020
 Projet Long
 """
 
-#Import des modules
+
+## Import des modules ##
 import os
 import pandas
 import re
 from Bio import SeqIO
 
 
-#Fonctions
+## Fonctions ##
 def listdir_nohidden(path):
     for f in os.listdir(path):
         if not f.startswith('.'):
@@ -102,10 +103,10 @@ for file_name in fasta_list:
 
 
 #Creation dataframe
-df = pandas.DataFrame(columns = ['gene','annovar_line','transcript_name','mutation_name','mRNA_sens', 'mRNA_antisens','longueur_mRNA','nombre_ORF_sens','ORF_sens','nombre_ORF_antisens','ORF_antisens'])
+df = pandas.DataFrame(columns = ['gene','annovar_line','transcript','mutation','mRNA_sens', 'mRNA_antisens','longueur_mRNA','nombre_ORF_sens','ORF_sens','nombre_ORF_antisens','ORF_antisens'])
 df['gene'] = pandas.Series(gene)
 df['annovar_line'] = pandas.Series(annovar_line)
-df['transcript_name'] = pandas.Series(transcript_name)
+df['transcript'] = pandas.Series(transcript_name)
 df['mutation_name'] = pandas.Series(mutation_name)
 df['mRNA_sens'] = pandas.Series(mRNA_sens)
 df['mRNA_antisens'] = pandas.Series(mRNA_antisens)
@@ -115,5 +116,9 @@ df['nombre_ORF_antisens'] = pandas.Series(nombre_ORF_antisens)
 df['ORF_sens'] = pandas.Series(ORF_sens)
 df['ORF_antisens'] = pandas.Series(ORF_antisens)
 
+print('\nLes mRNA ont ete traites.')
+
 #Export vers csv
 pandas.DataFrame.to_csv(df, 'ORF.csv')
+print('Le fichier ORF.csv a été généré.\n')
+print('\nJob done.\n')
