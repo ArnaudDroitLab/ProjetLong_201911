@@ -107,7 +107,7 @@ df = pandas.DataFrame(columns = ['gene','annovar_line','transcript','mutation','
 df['gene'] = pandas.Series(gene)
 df['annovar_line'] = pandas.Series(annovar_line)
 df['transcript'] = pandas.Series(transcript_name)
-df['mutation_name'] = pandas.Series(mutation_name)
+df['mutation'] = pandas.Series(mutation_name)
 df['mRNA_sens'] = pandas.Series(mRNA_sens)
 df['mRNA_antisens'] = pandas.Series(mRNA_antisens)
 df['longueur_mRNA'] = pandas.Series(longueur_mRNA)
