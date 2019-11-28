@@ -121,4 +121,4 @@ print('\nLes mRNA ont ete traites.')
 #Export vers csv
 pandas.DataFrame.to_csv(df, 'ORF.csv')
 print('Le fichier ORF.csv a été généré.\n')
-print('\nJob done.\n')
+print('Job done.\n')
