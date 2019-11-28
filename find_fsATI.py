@@ -29,33 +29,30 @@ def find_fs (mRNA_wildtype, orf_mut, same):
             fs = mRNA_wildtype.find(orf_mut[i:same])
     return fs
 
-
 #Regarder la présence de la séquence de Kozak à proximité de l'ATI
 #Colonne Pos_Kosak
 def find_kosak (orf): 
-    kosak_A = orf.find('GCCACCATGG')   
-    kosak_G = orf.find('GCCGCCATGG')
-    if kosak_A >= 0:
-        kosak_indice = kosak_A
-    if kosak_G >= 0:
-        kosak = kosak_G
+    if orf.find('A**ATGG')>=0 or orf.find('G**ATGG')>=0:
+        kosak_strength = 3
+    if orf.find('A**ATG')>=0 or orf.find('G**ATG')>=0 or orf.find('ATGG'):
+        kosak_strength = 2
+    if orf.find('ATG')>=0:
+        kosak_strength = 1
     else: 
-        kosak = -1
-    return kosak
-
-
+        kosak_strength = -1
+    return kosak_strength
 
 ### MAIN ##
 df = pandas.read_csv('ORF.csv', header=0, index_col=0)
 
 same_list = []
 fs_list = []
-kosak_list = []
 orf_list = []
 gene_list = []
 transcript_list = []
 mutation_list = []
 sens_list = []
+kosak_list = []
 
 #Lecture du dataframe ligne par ligne
 for i in range(len(df)):
@@ -80,7 +77,7 @@ for i in range(len(df)):
         orf_list_antisens = orf_list_antisens.replace("'","")
         orf_list_antisens = orf_list_antisens.split(',')
 
-        #Sens
+        ## SENS ##
         for orf_sens in orf_list_sens: 
     
             orf_list.append(orf_sens)
@@ -95,11 +92,12 @@ for i in range(len(df)):
             #fs
             fs_sens = find_fs(wt_sens,orf_sens, same_sens)
             fs_list.append(fs_sens)
-            #kosac
-            kosak_sens = find_kosak(orf_sens)
+        
+            #Kosac
+            kosak_sens = find_kosak(orf_sens[fs_sens-15:fs_sens+15])
             kosak_list.append(kosak_sens)
         
-        #Antisens
+        ## ANTISENS ##
         for orf_antisens in orf_list_antisens: 
             
             orf_list.append(orf_antisens)
@@ -114,15 +112,17 @@ for i in range(len(df)):
             #fs
             fs_antisens = find_fs(wt_antisens,orf_antisens, same_antisens)
             fs_list.append(fs_antisens)
-            #kosac
-            kosak_antisens = find_kosak(orf_antisens)
+
+            #Kosac
+            kosak_antisens = find_kosak(orf_antisens[fs_antisens-15:fs_antisens+15])
             kosak_list.append(kosak_antisens)
+            
         
 #Creation dataframe resultats          
-df_indices = pandas.DataFrame(columns = ['gene', 'transcript', 'mutation', 'sens', 'ORF', 'Pos_mut_fs', 'Pos_mut_ATI', 'Pos_Kosak'])
+df_indices = pandas.DataFrame(columns = ['gene', 'transcript', 'mutation', 'sens', 'ORF', 'Pos_mut_fs', 'Pos_mut_ATI', 'Kosak_strength'])
 df_indices['Pos_mut_ATI'] = pandas.Series(same_list)
 df_indices['Pos_mut_fs'] = pandas.Series(fs_list)
-df_indices['Pos_Kosak'] = pandas.Series(kosak_list)
+df_indices['Kosak_strength'] = pandas.Series(kosak_list)
 df_indices['ORF'] = pandas.Series(orf_list)
 df_indices['gene'] = pandas.Series(gene_list)
 df_indices['transcript'] = pandas.Series(transcript_list)
@@ -134,6 +134,7 @@ df_ATI = df_indices.loc [ df_indices['Pos_mut_ATI']>0 ]
 df_fsATI = df_ATI.loc [ df_ATI['Pos_mut_fs']>0 ]
 
 print('\nLes fsATI ont été trouves.')
+print('Les forces de Kasak ont été calculées.')
 
 #Export vers csv
 pandas.DataFrame.to_csv(df_fsATI, 'fsATI.csv')
