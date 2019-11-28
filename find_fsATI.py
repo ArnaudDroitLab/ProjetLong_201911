@@ -43,6 +43,7 @@ def find_kosak (orf):
     return kosak_strength
 
 ### MAIN ##
+#Lecture de (orf.csv
 df = pandas.read_csv('ORF.csv', header=0, index_col=0)
 
 same_list = []
@@ -133,10 +134,22 @@ df_indices['sens'] = pandas.Series(sens_list)
 df_ATI = df_indices.loc [ df_indices['Pos_mut_ATI']>0 ]
 df_fsATI = df_ATI.loc [ df_ATI['Pos_mut_fs']>0 ]
 
+#Lecture du fichier PhyloP
+#Extraction des infos
+with open("../PhyloP/phylop_vert.sga", "r") as filin:
+    for phylop_ligne in filin:
+        phylop_list = phylop_ligne.split(sep='\t')
+        transcript_name = phylop_list[0]
+        position_genomique = phylop_list[2]
+        score_phylop = int(phylop_list[4].replace('\n',''))+1        
+
+
 print('\nLes fsATI ont été trouves.')
-print('Les forces de Kasak ont été calculées.')
+print('\nValidation des fsATI:')
+print('***Les forces de Kosak ont été calculées.')
+print('***Lecture du fichier phylop_vert.sga et extraction des scores PhyloP.')
 
 #Export vers csv
 pandas.DataFrame.to_csv(df_fsATI, 'fsATI.csv')
-print('Le fichier fsATI.csv a été généré.\n')
+print('\nLe fichier fsATI.csv a été généré.\n')
 print('Job done.\n')
