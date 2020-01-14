@@ -12,16 +12,18 @@ import pandas
 
 # Selectionner les séquences avec un score Kosak=3 et PholoP>=2
 def select (fsATI_file):
-    #Creation d'un dataframe vide
-    df_validated = pandas.DataFrame()
-
-    #Lecture de fsATI.csv
-    df_fsATI = pandas.read_csv(fsATI_file, header=0, index_col=0)
-
-    # #Tri
-    df_validated = df_fsATI.loc [ df_fsATI ['Kosak_strength']==3 , df_fsATI['PhyloP score']>=2 ]
     
-    return df_validated
+    #Lecture de fsATI.csv
+    df_fsATI = pandas.read_csv(fsATI_file, sep=';')
+
+    #Tri
+    # df_fsATI[df_fsATI['Kosak_strength']==3 & (df_fsATI['PhyloP_score']>=2)]
+    
+    kosak = df_fsATI['Kosak_strength']==3
+    phylop = df_fsATI['PhyloP_score']>=2
+    df_fsATI[kosak & phylop]
+
+    return df_fsATI
 
 
 

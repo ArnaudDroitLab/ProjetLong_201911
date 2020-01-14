@@ -118,7 +118,7 @@ for i in range(len(df)):
 
 #Lecture du fichier PhyloP
 #Extraction des infos
-with open("../PhyloP/phylop_vert.sga", "r") as filin:
+with open("PhyloP/phylop_vert.sga", "r") as filin:
     for phylop_ligne in filin:
         phylop_list = phylop_ligne.split(sep='\t')
         transcript_name = phylop_list[0]
@@ -133,7 +133,7 @@ print(transcript_list)
 
         
 #Creation dataframe resultats          
-df_indices = pandas.DataFrame(columns = ['gene', 'transcript', 'mutation', 'sens', 'ORF', 'Pos_mut_fs', 'Pos_mut_ATI', 'Kosak_strength','PhyloP score'])
+df_indices = pandas.DataFrame(columns = ['gene', 'transcript', 'mutation', 'sens', 'ORF', 'Pos_mut_fs', 'Pos_mut_ATI', 'Kosak_strength','PhyloP_score'])
 df_indices['Pos_mut_ATI'] = pandas.Series(same_list)
 df_indices['Pos_mut_fs'] = pandas.Series(fs_list)
 df_indices['Kosak_strength'] = pandas.Series(kosak_list)
