@@ -43,7 +43,7 @@ def find_kosak (orf):
     return kosak_strength
 
 ### MAIN ##
-#Lecture de (orf.csv
+#Lecture de orf.csv
 df = pandas.read_csv('ORF.csv', header=0, index_col=0)
 
 same_list = []
@@ -93,9 +93,8 @@ for i in range(len(df)):
             #fs
             fs_sens = find_fs(wt_sens,orf_sens, same_sens)
             fs_list.append(fs_sens)
-        
             #Kosac
-            kosak_sens = find_kosak(orf_sens[fs_sens-15:fs_sens+15])
+            kosak_sens = find_kosak(orf_sens[same_sens-15:same_sens+15])
             kosak_list.append(kosak_sens)
         
         ## ANTISENS ##
@@ -113,14 +112,28 @@ for i in range(len(df)):
             #fs
             fs_antisens = find_fs(wt_antisens,orf_antisens, same_antisens)
             fs_list.append(fs_antisens)
-
             #Kosac
-            kosak_antisens = find_kosak(orf_antisens[fs_antisens-15:fs_antisens+15])
+            kosak_antisens = find_kosak(orf_antisens[same_antisens-15:same_antisens+15])
             kosak_list.append(kosak_antisens)
-            
+
+#Lecture du fichier PhyloP
+#Extraction des infos
+with open("../PhyloP/phylop_vert.sga", "r") as filin:
+    for phylop_ligne in filin:
+        phylop_list = phylop_ligne.split(sep='\t')
+        transcript_name = phylop_list[0]
+        position_genomique = phylop_list[2]
+        score_phylop = int(phylop_list[4].replace('\n',''))+1        
+
+# for transcript in transcript_list:
+#     if transcript in transcript_name:
+#         print('banana')
+
+print(transcript_list)
+
         
 #Creation dataframe resultats          
-df_indices = pandas.DataFrame(columns = ['gene', 'transcript', 'mutation', 'sens', 'ORF', 'Pos_mut_fs', 'Pos_mut_ATI', 'Kosak_strength'])
+df_indices = pandas.DataFrame(columns = ['gene', 'transcript', 'mutation', 'sens', 'ORF', 'Pos_mut_fs', 'Pos_mut_ATI', 'Kosak_strength','PhyloP score'])
 df_indices['Pos_mut_ATI'] = pandas.Series(same_list)
 df_indices['Pos_mut_fs'] = pandas.Series(fs_list)
 df_indices['Kosak_strength'] = pandas.Series(kosak_list)
@@ -134,22 +147,13 @@ df_indices['sens'] = pandas.Series(sens_list)
 df_ATI = df_indices.loc [ df_indices['Pos_mut_ATI']>0 ]
 df_fsATI = df_ATI.loc [ df_ATI['Pos_mut_fs']>0 ]
 
-#Lecture du fichier PhyloP
-#Extraction des infos
-with open("../PhyloP/phylop_vert.sga", "r") as filin:
-    for phylop_ligne in filin:
-        phylop_list = phylop_ligne.split(sep='\t')
-        transcript_name = phylop_list[0]
-        position_genomique = phylop_list[2]
-        score_phylop = int(phylop_list[4].replace('\n',''))+1        
 
-
-print('\nLes fsATI ont été trouves.')
+print('\nfsATI trouvées.')
 print('\nValidation des fsATI:')
-print('***Les forces de Kosak ont été calculées.')
-print('***Lecture du fichier phylop_vert.sga et extraction des scores PhyloP.')
+print('***Forces de Kosak calculées.')
+print('***Scores PhyloP recuperés.')
 
 #Export vers csv
 pandas.DataFrame.to_csv(df_fsATI, 'fsATI.csv')
-print('\nLe fichier fsATI.csv a été généré.\n')
+print('\nFichier fsATI.csv généré.\n')
 print('Job done.\n')
