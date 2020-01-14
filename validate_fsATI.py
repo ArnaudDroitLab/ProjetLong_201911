@@ -16,13 +16,10 @@ def select (fsATI_file):
     df_validated = pandas.DataFrame()
 
     #Lecture de fsATI.csv
-    df_fsATI = pandas.read_csv(fsATIfile, header=0, index_col=0)
+    df_fsATI = pandas.read_csv(fsATI_file, header=0, index_col=0)
 
-    #Tri
-    for i in range(len(df_fsATI)):
-
-        if df_fsATI.iloc[i]['Kosak_strength'] == 3 and df_fsATI.iloc[i]['PhyloP score']>=2:
-            df_validated.iloc[i] = df_fsATI.iloc[i]
+    # #Tri
+    df_validated = df_fsATI.loc [ df_fsATI ['Kosak_strength']==3 , df_fsATI['PhyloP score']>=2 ]
     
     return df_validated
 
@@ -30,11 +27,11 @@ def select (fsATI_file):
 
 ### MAIN ##
 df_validated = select('fsATI.csv')
-print('\nSelections des fsATI réalisée.\n')
+print('\nSelections des fsATI réalisée.')
 
 #Export vers csv
 pandas.DataFrame.to_csv(df_validated, 'fsATI_validated.csv')
-print('\nFichier fsATI_validated.csv généré.\n')
+print('Fichier fsATI_validated.csv généré.\n')
 print('Job done.\n')
 
 
