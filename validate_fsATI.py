@@ -25,7 +25,6 @@ def select (fsATI_file):
 
 ### MAIN ##
 df_validated = select('fsATI.csv')
-print(df_validated)
 print('\nSelection des fsATI réalisée.')
 
 #Export vers csv
