@@ -14,22 +14,19 @@ import pandas
 def select (fsATI_file):
     
     #Lecture de fsATI.csv
-    df_fsATI = pandas.read_csv(fsATI_file, sep=';')
-
+    df_fsATI = pandas.read_csv(fsATI_file)
+    #Reset des indexs
+    df_fsATI.reset_index(drop=True)
     #Tri
-    # df_fsATI[df_fsATI['Kosak_strength']==3 & (df_fsATI['PhyloP_score']>=2)]
+    df_fsATI = df_fsATI[df_fsATI['Kosak_strength']==3 & (df_fsATI['PhyloP_score']>=2)]
     
-    kosak = df_fsATI['Kosak_strength']==3
-    phylop = df_fsATI['PhyloP_score']>=2
-    df_fsATI[kosak & phylop]
-
     return df_fsATI
-
 
 
 ### MAIN ##
 df_validated = select('fsATI.csv')
-print('\nSelections des fsATI réalisée.')
+print(df_validated)
+print('\nSelection des fsATI réalisée.')
 
 #Export vers csv
 pandas.DataFrame.to_csv(df_validated, 'fsATI_validated.csv')
