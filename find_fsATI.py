@@ -42,10 +42,29 @@ def find_kosak (orf):
         kosak_strength = -1
     return kosak_strength
 
-### MAIN ##
+### MAIN ###
+
+### PHYLOP ###
+#Lecture du fichier PhyloP
+#Extraction des infos
+with open("../PhyloP/phylop_vert.sga", "r") as filin:
+    for phylop_ligne in filin:
+        phylop_list = phylop_ligne.split(sep='\t')
+        transcript_name = phylop_list[0]
+        position_genomique = phylop_list[2]
+        score_phylop = int(phylop_list[4].replace('\n',''))+1        
+
+#Récupération des coordonnées génomiques pour chaque mRNA
+
+#Association position génomique du mRNA à celle du fichier PhyloP
+
+#Ecriture dans le dataframe
+
+
 #Lecture de orf.csv
 df = pandas.read_csv('ORF.csv', header=0, index_col=0)
 
+#Initiation des listes
 same_list = []
 fs_list = []
 orf_list = []
@@ -54,6 +73,7 @@ transcript_list = []
 mutation_list = []
 sens_list = []
 kosak_list = []
+phylop_serie = []
 
 #Lecture du dataframe ligne par ligne
 for i in range(len(df)):
@@ -116,22 +136,7 @@ for i in range(len(df)):
             kosak_antisens = find_kosak(orf_antisens[same_antisens-15:same_antisens+15])
             kosak_list.append(kosak_antisens)
 
-#Lecture du fichier PhyloP
-#Extraction des infos
-with open("PhyloP/phylop_vert.sga", "r") as filin:
-    for phylop_ligne in filin:
-        phylop_list = phylop_ligne.split(sep='\t')
-        transcript_name = phylop_list[0]
-        position_genomique = phylop_list[2]
-        score_phylop = int(phylop_list[4].replace('\n',''))+1        
 
-# for transcript in transcript_list:
-#     if transcript in transcript_name:
-#         print('banana')
-
-print(transcript_list)
-
-        
 #Creation dataframe resultats          
 df_indices = pandas.DataFrame(columns = ['gene', 'transcript', 'mutation', 'sens', 'ORF', 'Pos_mut_fs', 'Pos_mut_ATI', 'Kosak_strength','PhyloP_score'])
 df_indices['Pos_mut_ATI'] = pandas.Series(same_list)
@@ -142,6 +147,7 @@ df_indices['gene'] = pandas.Series(gene_list)
 df_indices['transcript'] = pandas.Series(transcript_list)
 df_indices['mutation'] = pandas.Series(mutation_list)
 df_indices['sens'] = pandas.Series(sens_list)
+df_indices['PhyloP_score'] = pandas.Series(phylop_serie)
 
 #Selectionne les lignes en fonction des indices positifs pour Pos_mut_fs et Pos_mut_ATI
 df_ATI = df_indices.loc [ df_indices['Pos_mut_ATI']>0 ]
