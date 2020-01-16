@@ -46,7 +46,7 @@ def find_kosak (orf):
 def find_phylop (ATI_pos):
     
     #Lecture du fichier PhyloP
-    with open("../PhyloP/phylop_vert.sga", "r") as filin:
+    with open("./PhyloP/phylop_vert.sga", "r") as filin:
         #Extraction des infos
         for phylop_ligne in filin:
             phylop_list = phylop_ligne.split(sep='\t')
